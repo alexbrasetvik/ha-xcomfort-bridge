@@ -49,7 +49,10 @@ class HASSXComfortShade(CoverEntity):
         self._state = None
         self.device_id = device.device_id
 
-        self._unique_id = f"shade_{DOMAIN}_{hub.identifier}-{device.device_id}"
+        if hub.id_version == 1:
+            self._unique_id = f"shade_{DOMAIN}_{hub.identifier}-{device.device_id}"
+        else:
+            self._unique_id = f"shade_{DOMAIN}_{hub.unique_id}-{device.device_id}"
 
     @property
     def device_class(self):

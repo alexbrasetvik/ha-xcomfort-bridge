@@ -52,8 +52,12 @@ class HASSXComfortLight(LightEntity):
         self._device = device
         self._name = device.name
         self._state = None
-        self.device_id = device.device_id
-        self._unique_id = f"light_{DOMAIN}_{hub.identifier}-{device.device_id}"
+
+        if hub.id_version == 1:
+            self._unique_id = f"light_{DOMAIN}_{self.hub.identifier}-{self._device.device_id}"
+        else:
+            self._unique_id = f"light_{DOMAIN}_{self.hub.unique_id}-{self._device.device_id}"
+
         self._color_mode = ColorMode.BRIGHTNESS if self._device.dimmable else ColorMode.ONOFF
 
     async def async_added_to_hass(self):

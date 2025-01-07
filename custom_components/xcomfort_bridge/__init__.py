@@ -8,7 +8,7 @@ from homeassistant.const import CONF_IP_ADDRESS, Platform
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.typing import ConfigType
 
-from .const import CONF_AUTH_KEY, CONF_IDENTIFIER, DOMAIN
+from .const import CONF_AUTH_KEY, CONF_ID_VERSION, CONF_IDENTIFIER, DOMAIN
 from .hub import XComfortHub
 
 PLATFORMS = [
@@ -36,6 +36,12 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     identifier = str(config.get(CONF_IDENTIFIER))
     ip = str(config.get(CONF_IP_ADDRESS))
     auth_key = str(config.get(CONF_AUTH_KEY))
+
+    # To remain compatible with devices and entities generated before unique_ids
+    # were changed to support multiple hubs, this setting defaults to the first version,
+    # while hubs configured after we introduced the new version will be explicitly configured
+    # to have version 2.
+    id_version = config.get(CONF_ID_VERSION, 1)
 
     hub = XComfortHub(hass, identifier=identifier, ip=ip, auth_key=auth_key)
     hass.data[DOMAIN][entry.entry_id] = hub

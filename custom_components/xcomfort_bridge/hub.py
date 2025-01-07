@@ -26,7 +26,15 @@ def log(msg: str):
 
 
 class XComfortHub:
-    def __init__(self, hass: HomeAssistant, identifier: str, ip: str, auth_key: str):
+    def __init__(
+        self,
+        hass: HomeAssistant,
+        identifier: str,
+        ip: str,
+        auth_key: str,
+        id_version: int = 2,
+        unique_id: str | None = None,
+    ):
         """Initialize underlying bridge"""
         bridge = Bridge(ip, auth_key)
         self.hass = hass
@@ -34,7 +42,9 @@ class XComfortHub:
         self.identifier = identifier
         if self.identifier is None:
             self.identifier = ip
-        self._id = ip
+
+        self.unique_id = unique_id or self.identifier
+        self.id_version = id_version
         self.devices = list()
         self._loop = asyncio.get_event_loop()
 
@@ -70,11 +80,9 @@ class XComfortHub:
 
     @property
     def hub_id(self) -> str:
-        return self._id
-
-    async def test_connection(self) -> bool:
-        await asyncio.sleep(1)
-        return True
+        if self.id_version == 1:
+            return self.bridge.ip_address
+        return self.unique_id
 
     @staticmethod
     def get_hub(hass: HomeAssistant, entry: ConfigEntry) -> XComfortHub:

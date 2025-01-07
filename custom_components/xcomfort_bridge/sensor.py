@@ -75,7 +75,12 @@ class XComfortPowerSensor(SensorEntity):
         self.hub = hub
         self._room = room
         self._attr_name = self._room.name
-        self._attr_unique_id = f"energy_{self._room.room_id}"
+
+        if hub.id_version == 1:
+            self._attr_unique_id = f"energy_{self._room.room_id}"
+        else:
+            self._attr_unique_id = f"energy_consumption_{DOMAIN}_{self.hub.unique_id}-{self._room.room_id}"
+
         self._state = None
         self._room.state.subscribe(lambda state: self._state_change(state))
 
@@ -113,7 +118,12 @@ class XComfortEnergySensor(RestoreSensor):
         self.hub = hub
         self._room = room
         self._attr_name = self._room.name
-        self._attr_unique_id = f"energy_kwh_{self._room.room_id}"
+
+        if hub.id_version == 1:
+            self._attr_unique_id = f"energy_kwh_{self._room.room_id}"
+        else:
+            self._attr_unique_id = f"energy_kwh_{DOMAIN}_{self.hub.unique_id}-{self._room.room_id}"
+
         self._state = None
         self._room.state.subscribe(lambda state: self._state_change(state))
         self._updateTime = time.monotonic()
@@ -165,9 +175,13 @@ class XComfortHumiditySensor(SensorEntity):
         )
         self._device = device
         self._attr_name = self._device.name
-        self._attr_unique_id = f"humidity_{self._device.name}_{self._device.device_id}"
 
         self.hub = hub
+        if self.hub.id_version == 1:
+            self._attr_unique_id = f"humidity_{self._device.name}_{self._device.device_id}"
+        else:
+            self._attr_unique_id = f"humidity_{DOMAIN}_{self.hub.unique_id}-{self._device.device_id}"
+
         self._state = None
         self._device.state.subscribe(lambda state: self._state_change(state))
 

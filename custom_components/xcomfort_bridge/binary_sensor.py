@@ -46,9 +46,12 @@ class XComfortDoorWindowSensor(BinarySensorEntity):
         self._attr_state = device.is_open
 
         if isinstance(device, WindowSensor):
+            door_or_window = "window"
             self._attr_device_class = BinarySensorDeviceClass.WINDOW
         elif isinstance(device, DoorSensor):
+            door_or_window = "door"
             self._attr_device_class = BinarySensorDeviceClass.DOOR
+        self._attr_unique_id = f"sensor_{door_or_window}_{DOMAIN}_{self.hub.unique_id}-{self._device.device_id}"
 
     async def async_added_to_hass(self):
         if self._device.state is not None:

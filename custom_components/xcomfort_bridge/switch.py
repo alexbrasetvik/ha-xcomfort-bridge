@@ -46,9 +46,7 @@ class XComfortSwitch(SwitchEntity):
         self._device = device
         self._name = device.name
         self._state = None
-        self.device_id = device.device_id
-
-        self._unique_id = f"switch_{DOMAIN}_{device.device_id}"
+        self._unique_id = f"switch_{DOMAIN}_{self.hub.unique_id}-{self._device.device_id}"
 
     async def async_added_to_hass(self) -> None:
         self._device.state.subscribe(self._state_change)

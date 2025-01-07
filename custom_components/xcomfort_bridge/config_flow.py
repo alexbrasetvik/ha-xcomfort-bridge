@@ -10,7 +10,7 @@ from homeassistant.components import dhcp
 from homeassistant.const import CONF_IP_ADDRESS
 from homeassistant.helpers.device_registry import format_mac
 
-from .const import CONF_AUTH_KEY, CONF_IDENTIFIER, CONF_MAC, DOMAIN
+from .const import CONF_AUTH_KEY, CONF_ID_VERSION, CONF_IDENTIFIER, CONF_MAC, DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -82,6 +82,7 @@ class XComfortBridgeConfigFlow(config_entries.ConfigFlow):
             self.data[CONF_IP_ADDRESS] = user_input[CONF_IP_ADDRESS]
             self.data[CONF_AUTH_KEY] = user_input[CONF_AUTH_KEY]
             self.data[CONF_IDENTIFIER] = user_input.get(CONF_IDENTIFIER)
+            self.data[CONF_ID_VERSION] = 2
 
             await self.async_set_unique_id(f"{user_input[CONF_IDENTIFIER]}/{user_input[CONF_IP_ADDRESS]}")
 

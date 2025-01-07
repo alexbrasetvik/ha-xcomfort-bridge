@@ -71,7 +71,10 @@ class HASSXComfortRcTouch(ClimateEntity):
         self.temperature = 20.0
         self.currentsetpoint = 20.0
 
-        self._unique_id = f"climate_{DOMAIN}_{hub.identifier}-{room.room_id}"
+        if hub.id_version == 1:
+            self._attr_unique_id = f"climate_{DOMAIN}_{hub.identifier}-{room.room_id}"
+        else:
+            self._attr_unique_id = f"climate_{DOMAIN}_{hub.unique_id}-{room.room_id}"
 
     async def async_added_to_hass(self):
         log(f"Added to hass {self._name} ")
@@ -154,11 +157,6 @@ class HASSXComfortRcTouch(ClimateEntity):
     def name(self):
         """Return the display name of this light."""
         return self._name
-
-    @property
-    def unique_id(self):
-        """Return the unique ID."""
-        return self._unique_id
 
     @property
     def should_poll(self) -> bool:
