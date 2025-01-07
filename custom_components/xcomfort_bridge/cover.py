@@ -29,19 +29,21 @@ def log(msg: str):
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback) -> None:
     hub = XComfortHub.get_hub(hass, entry)
 
-    devices = hub.devices
+    async def _wait_for_hub_then_setup():
+        await hub.has_done_initial_load.wait()
 
-    _LOGGER.info(f"Found {len(devices)} xcomfort devices")
+        devices = hub.devices
 
-    shades = list()
-    for device in devices:
-        if isinstance(device, Shade):
-            _LOGGER.info(f"Adding {device}")
-            shade = HASSXComfortShade(hass, hub, device)
-            shades.append(shade)
+        shades = list()
+        for device in devices:
+            if isinstance(device, Shade):
+                shade = HASSXComfortShade(hass, hub, device)
+                shades.append(shade)
 
-    _LOGGER.info(f"Added {len(shades)} shades")
-    async_add_entities(shades)
+        _LOGGER.info(f"Added {len(shades)} shades")
+        async_add_entities(shades)
+
+    asyncio.create_task(_wait_for_hub_then_setup())
 
 
 class HASSXComfortShade(CoverEntity):

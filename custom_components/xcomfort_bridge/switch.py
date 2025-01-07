@@ -1,3 +1,4 @@
+import asyncio
 import logging
 from typing import Optional
 
@@ -22,19 +23,25 @@ def log(msg: str):
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback) -> None:
     hub = XComfortHub.get_hub(hass, entry)
 
-    switches = list()
-    for device in hub.devices:
-        if isinstance(device, Rocker):
-            _LOGGER.info(f"Adding {device}")
-            switch = XComfortSwitch(hass, device)
-            switches.append(switch)
+    async def _wait_for_hub_then_setup():
+        await hub.has_done_initial_load.wait()
 
-    async_add_entities(switches)
+        switches = list()
+        for device in hub.devices:
+            if isinstance(device, Rocker):
+                _LOGGER.info(f"Adding {device}")
+                switch = XComfortSwitch(hass, hub, device)
+                switches.append(switch)
+
+        async_add_entities(switches)
+
+    asyncio.create_task(_wait_for_hub_then_setup())
 
 
 class XComfortSwitch(SwitchEntity):
-    def __init__(self, hass: HomeAssistant, device: Rocker):
+    def __init__(self, hass: HomeAssistant, hub: XComfortHub, device: Rocker):
         self.hass = hass
+        self.hub = hub
 
         self._attr_device_class = SwitchDeviceClass.SWITCH
         self._device = device
