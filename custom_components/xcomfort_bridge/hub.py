@@ -19,7 +19,7 @@ _LOGGER = logging.getLogger(__name__)
 
 
 class XComfortHub:
-    def __init__(self, hass: HomeAssistant, identifier: str, ip: str, auth_key: str):
+    def __init__(self, hass: HomeAssistant, identifier: str, ip: str, auth_key: str, entry: ConfigEntry):
         """Initialize underlying bridge"""
         bridge = Bridge(ip, auth_key)
         self.hass = hass
@@ -27,7 +27,8 @@ class XComfortHub:
         self.identifier = identifier
         if self.identifier is None:
             self.identifier = ip
-        self._id = ip
+        self.entry = entry
+        self._id = entry.unique_id
         self.devices = list()
         self._loop = asyncio.get_event_loop()
 
