@@ -146,7 +146,7 @@ class HASSXComfortRcTouch(ClimateEntity):
 
     @property
     def name(self):
-        """Return the display name of this light."""
+        """Return the display name of this entity."""
         return self._name
 
     @property
